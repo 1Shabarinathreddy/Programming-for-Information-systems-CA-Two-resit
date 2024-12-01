@@ -1,10 +1,12 @@
-from flask import Flask
+from flask import Flask, request, jsonify
+from werkzeug.security import generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://masthan:Masthan123@localhost:5432/carsdb'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5432/cars_db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -15,6 +17,20 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(200), nullable=False)
+
+# Route for Signup API
+@app.route('/api/signup', methods=['POST'])
+def api_signup():
+    data = request.get_json()
+    username = data['username']
+    email = data['email']
+    phone = data['phone']
+    password = generate_password_hash(data['password'])
+    
+    new_user = User(username=username, email=email, phone=phone, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User registered successfully!'}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
