@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from werkzeug.security import generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5432/cars_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://masthan:Masthan123@localhost:5432/carsdb'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -22,9 +22,15 @@ class User(db.Model):
 @app.route('/')
 def landing():
     return render_template('landing.html')
+        
+@app.route('/signup', methods=['GET'])
+def signup():
+    return render_template('signup.html')
 
+@app.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
 
-# Route for Signup API
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
     data = request.get_json()
