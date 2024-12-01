@@ -18,6 +18,12 @@ class User(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+
+@app.route('/')
+def landing():
+    return render_template('landing.html')
+
+
 # Route for Signup API
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
@@ -27,8 +33,8 @@ def api_signup():
     phone = data['phone']
     password = generate_password_hash(data['password'])
     
-    new_user = User(username=username, email=email, phone=phone, password=password)
-    db.session.add(new_user)
+    create_user = User(username=username, email=email, phone=phone, password=password)
+    db.session.add(create_user)
     db.session.commit()
     return jsonify({'message': 'User registered successfully!'}), 201
 
