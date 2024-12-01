@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://masthan:Masthan123@localhost:5432/carsdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://shabari:shabarinath@localhost:5432/carsdb'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -43,6 +43,17 @@ def api_signup():
     db.session.add(create_user)
     db.session.commit()
     return jsonify({'message': 'User registered successfully!'}), 201
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json()
+    username_or_email = data['username_or_email']
+    password = data['password']
+    
+    user = User.query.filter((User.email == username_or_email) | (User.username == username_or_email)).first()
+    if user and check_password_hash(user.password, password):
+        return jsonify({'message': 'Login successful!'}), 200
+    return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == '__main__':
     app.run(debug=True)

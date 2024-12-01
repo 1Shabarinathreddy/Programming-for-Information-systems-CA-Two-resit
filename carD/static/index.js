@@ -6,3 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const signupButton = document.getElementById('loginButton');
+    if (signupButton) {
+        signupButton.addEventListener('click', () => {
+            window.location.href = '/login';
+        });
+    }
+});
