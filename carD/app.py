@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
-    const loadingIndicator = document.getElementById('loadingIndicator'); // Assume there's a loading element in HTML
+    const loadingIndicator = document.getElementById('loadingIndicator'); 
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok) {
                     alert(data.message);
-                    window.location.href = '/dashboard';
                 } else {
                     alert(data.message);
                 }
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error during fetch:', error);
                 alert('An error occurred. Please try again.');
             } finally {
-                // Hide loading indicator
                 if (loadingIndicator) {
                     loadingIndicator.style.display = 'none';
                 }
