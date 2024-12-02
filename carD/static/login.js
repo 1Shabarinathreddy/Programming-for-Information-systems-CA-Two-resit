@@ -1,18 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
-    const loadingIndicator = document.getElementById('loadingIndicator'); 
-
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
+            e.preventDefault(); 
+
             const username_or_email = document.getElementById('username_or_email').value;
             const password = document.getElementById('password').value;
-
-            // Show loading indicator
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'block';
-            }
 
             try {
                 const response = await fetch('/api/login', {
@@ -26,16 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok) {
                     alert(data.message);
+                    window.location.href = '/dashboard'; 
                 } else {
-                    alert(data.message);
+                    alert(data.message); 
                 }
             } catch (error) {
-                console.error('Error during fetch:', error);
+                console.error('Error:', error);
                 alert('An error occurred. Please try again.');
-            } finally {
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
             }
         });
     }

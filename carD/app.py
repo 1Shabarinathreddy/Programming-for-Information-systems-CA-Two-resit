@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template,  session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = "b8b1d5a3c3a24f82a7bc4012a6e9d158"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://shabari:shabarinath@localhost:5432/carsdb'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -52,8 +52,16 @@ def api_login():
     
     user = User.query.filter((User.email == username_or_email) | (User.username == username_or_email)).first()
     if user and check_password_hash(user.password, password):
-        return jsonify({'message': 'Login successful!'}), 200
+        session['user_id'] = user.id
+        print(session)
+        return jsonify({'message': 'Login successful!', 'redirect': '/dashboard'}), 200
     return jsonify({'message': 'Invalid credentials'}), 401
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('dashboard.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
