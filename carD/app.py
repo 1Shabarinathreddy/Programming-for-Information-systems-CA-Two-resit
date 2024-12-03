@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template,  session, flash
+from flask import Flask, request, jsonify, render_template,  session, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -62,6 +62,12 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html')
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('user_id', None)
+    flash('You have been logged out successfully!')
+    return redirect(url_for('landing'))
 
 if __name__ == '__main__':
     app.run(debug=True)
