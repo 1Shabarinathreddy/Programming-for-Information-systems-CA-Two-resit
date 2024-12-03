@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Add Car - Car Connect</title>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Car</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="text" name="model" placeholder="Car Model" required>
+            <input type="text" name="price" placeholder="Price" required>
+            <input type="tel" name="contact_number" placeholder="Contact Number" required>
+            <input type="file" name="photo" required>
+            <button type="submit" class="button">Add Car</button>
+        </form>
+    </div>
+    <script src="/static/add_car.js"></script>
+</body>
+</html>

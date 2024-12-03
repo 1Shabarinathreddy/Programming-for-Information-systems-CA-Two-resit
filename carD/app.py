@@ -3,10 +3,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "b8b1d5a3c3a24f82a7bc4012a6e9d158"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://shabari:shabarinath@localhost:5432/carsdb'
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -71,11 +73,35 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html')
 
+@app.route('/add-car', methods=['GET', 'POST'])
+def add_car():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        user_id = session['user_id']
+        model = request.form['model']
+        price = request.form['price']
+        contact_number = request.form['contact_number']
+        photo = request.files['photo']
+        
+        if photo:
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+            filename = secure_filename(photo.filename)
+            photo_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            photo.save(photo_path)
+            
+            new_car = Car(user_id=user_id, model=model, price=price, contact_number=contact_number, photo=filename)
+            db.session.add(new_car)
+            db.session.commit()
+            return jsonify({'message': 'Car added successfully!', 'status': 'success'}), 200
+    return render_template('add_car.html')
+
 @app.route('/logout', methods=['GET'])
 def logout():
     session.pop('user_id', None)
-    flash('You have been logged out successfully!')
     return redirect(url_for('landing'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
