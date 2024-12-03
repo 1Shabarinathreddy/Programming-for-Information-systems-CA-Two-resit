@@ -97,6 +97,23 @@ def add_car():
             return jsonify({'message': 'Car added successfully!', 'status': 'success'}), 200
     return render_template('add_car.html')
 
+
+@app.route('/api/my-cars', methods=['GET'])
+def api_my_cars():
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    user_id = session['user_id']
+    cars = Car.query.filter_by(user_id=user_id).all()
+    cars_list = [{'id': car.id, 'model': car.model, 'price': car.price, 'contact_number': car.contact_number, 'photo': car.photo} for car in cars]
+    return jsonify({'cars': cars_list}), 200
+
+@app.route('/my-cars', methods=['GET'])
+def my_cars():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('my_cars.html')
+
+
 @app.route('/logout', methods=['GET'])
 def logout():
     session.pop('user_id', None)
