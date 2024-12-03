@@ -18,6 +18,14 @@ class User(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+class Car(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    model = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    contact_number = db.Column(db.String(20), nullable=False)
+    photo = db.Column(db.String(200), nullable=False)
+
 
 @app.route('/')
 def landing():
