@@ -113,6 +113,17 @@ def my_cars():
         return redirect(url_for('login'))
     return render_template('my_cars.html')
 
+@app.route('/api/delete-car/<int:car_id>', methods=['DELETE'])
+def delete_car(car_id):
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    user_id = session['user_id']
+    car = Car.query.filter_by(id=car_id, user_id=user_id).first()
+    if car:
+        db.session.delete(car)
+        db.session.commit()
+        return jsonify({'message': 'Car deleted successfully!'}), 200
+    return jsonify({'message': 'Car not found'}), 404
 
 @app.route('/logout', methods=['GET'])
 def logout():
