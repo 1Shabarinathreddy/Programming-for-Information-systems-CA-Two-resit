@@ -155,6 +155,24 @@ def get_car(car_id):
         }), 200
     return jsonify({'message': 'Car not found'}), 404
 
+@app.route('/api/update-car/<int:car_id>', methods=['PUT'])
+def update_car(car_id):
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    user_id = session['user_id']
+    car = Car.query.filter_by(id=car_id, user_id=user_id).first()
+    if not car:
+        return jsonify({'message': 'Car not found'}), 404
+
+    data = request.get_json()
+    car.model = data.get('model', car.model)
+    car.price = data.get('price', car.price)
+    car.contact_number = data.get('contact_number', car.contact_number)
+    
+    db.session.commit()
+    return jsonify({'message': 'Car updated successfully!'}), 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
