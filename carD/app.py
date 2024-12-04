@@ -130,6 +130,20 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('landing'))
 
+@app.route('/api/get-car/<int:car_id>', methods=['GET'])
+def get_car(car_id):
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    user_id = session['user_id']
+    car = Car.query.filter_by(id=car_id, user_id=user_id).first()
+    if car:
+        return jsonify({
+            'model': car.model,
+            'price': car.price,
+            'contact_number': car.contact_number
+        }), 200
+    return jsonify({'message': 'Car not found'}), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
