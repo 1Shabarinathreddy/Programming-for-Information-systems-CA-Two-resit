@@ -29,6 +29,17 @@ class Car(db.Model):
     photo = db.Column(db.String(200), nullable=False)
 
 
+class Booking(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
+    status = db.Column(db.String(50), default='Pending')
+    booking_date = db.Column(db.DateTime, nullable=False)
+    user = db.relationship('User', backref=db.backref('bookings', lazy=True))
+    car = db.relationship('Car', backref=db.backref('bookings', lazy=True))
+
+
+
 @app.route('/')
 def landing():
     return render_template('landing.html')
