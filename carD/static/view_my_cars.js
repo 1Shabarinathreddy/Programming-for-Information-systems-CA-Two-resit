@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <img src="/static/uploads/${car.photo}" alt="Car Photo" class="car-photo">
                         <div class="car-actions">
                             <button onclick="deleteCar(${car.id})">Delete Car</button>
+                            <button onclick="editCar(${car.id})">Edit Car</button>
                         </div>
                     `;
                     carsContainer.appendChild(carDiv);
@@ -40,19 +41,33 @@ async function deleteCar(carId) {
             });
             const responseData = await response.json();
             if (response.ok) {
-                console.log(responseData); // Log response to console for Network tab visibility
+                console.log(responseData);
                 alert('Car deleted successfully!');
-                // Instead of reloading immediately, wait so the response can be inspected
                 setTimeout(() => {
                     location.reload();
                 }, 1800);
             } else {
-                console.log(responseData); // Log error response to console for Network tab visibility
+                console.log(responseData); 
                 alert('Failed to delete car. Please try again.');
             }
         } catch (error) {
             console.error('Error deleting car:', error);
             alert('An error occurred while deleting the car.');
         }
+    }
+}
+
+async function editCar(carId) {
+    try {
+        const response = await fetch(`/api/get-car/${carId}`);
+        if (response.ok) {
+            const car = await response.json();
+            console.log('Car details fetched for editing:', car);
+        } else {
+            alert('Failed to fetch car details. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error fetching car details:', error);
+        alert('An error occurred while fetching car details.');
     }
 }
