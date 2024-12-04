@@ -74,6 +74,33 @@ async function editCar(carId) {
                 </div>
             `;
             document.body.insertAdjacentHTML('beforeend', editFormHtml);
+
+            document.getElementById('editCarForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const updatedCar = {
+                    model: document.getElementById('editModel').value,
+                    price: document.getElementById('editPrice').value,
+                    contact_number: document.getElementById('editContact').value
+                };
+                try {
+                    const updateResponse = await fetch(`/api/update-car/${carId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedCar)
+                    });
+                    if (updateResponse.ok) {
+                        alert('Car updated successfully!');
+                        location.reload();
+                    } else {
+                        alert('Failed to update car. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error updating car:', error);
+                    alert('An error occurred while updating the car.');
+                }
+            });
         } else {
             alert('Failed to fetch car details. Please try again.');
         }
