@@ -62,7 +62,18 @@ async function editCar(carId) {
         const response = await fetch(`/api/get-car/${carId}`);
         if (response.ok) {
             const car = await response.json();
-            console.log('Car details fetched for editing:', car);
+            const editFormHtml = `
+                <div class="edit-car-form">
+                    <h3>Edit Car</h3>
+                    <form id="editCarForm">
+                        <input type="text" id="editModel" value="${car.model}" required>
+                        <input type="text" id="editPrice" value="${car.price}" required>
+                        <input type="tel" id="editContact" value="${car.contact_number}" required>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', editFormHtml);
         } else {
             alert('Failed to fetch car details. Please try again.');
         }
