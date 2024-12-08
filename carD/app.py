@@ -215,25 +215,27 @@ def book_car(car_id):
 
 @app.route('/api/available-cars', methods=['GET'])
 def available_cars():
-    if 'user_id' not in session:
-        return jsonify({'message': 'Unauthorized access'}), 401
-    
-    user_id = session['user_id']
-    
-    # Fetch all cars except those owned by the logged-in user
-    cars = Car.query.filter(Car.user_id != user_id).all()
-    cars_list = [
-        {
-            'id': car.id,
-            'model': car.model,
-            'price': car.price,
-            'contact_number': car.contact_number,
-            'photo': car.photo
-        }
-        for car in cars
-    ]
-    
-    return jsonify({'cars': cars_list}), 200
+    query = request.args.get('query', '').lower()
+
+    # Filter cars by query if provided
+    if query:
+        cars = Car.query.filter(
+            Car.model.ilike(f"%{query}%")
+        ).all()
+    else:
+        cars = Car.query.all()
+
+    results = [{
+        'id': car.id,
+        'model': car.model,
+        'price': car.price,
+        'contact_number': car.contact_number,
+        'photo': car.photo
+    } for car in cars if car.user_id != session['user_id']]  # Exclude the logged-in user's cars
+
+    return jsonify({'cars': results}), 200
+
+
 
 @app.route('/api/car-bookings', methods=['GET'])
 def api_car_bookings():

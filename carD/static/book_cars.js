@@ -1,11 +1,18 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    await fetchAndDisplayCars(); // Fetch all cars initially
+});
+
+async function fetchAndDisplayCars(query = '') {
     try {
         // Fetch the available cars from the server
-        const response = await fetch('/api/available-cars');
+        const response = await fetch(`/api/available-cars${query ? `?query=${encodeURIComponent(query)}` : ''}`);
         
         if (response.ok) {
             const data = await response.json();
             const carsContainer = document.getElementById('carsContainer');
+
+            // Clear previous results
+            carsContainer.innerHTML = '';
 
             // Check if there are any available cars
             if (data.cars.length > 0) {
@@ -34,7 +41,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching available cars:', error);
         alert('An error occurred while fetching available cars.');
     }
-});
+}
+
+async function searchCars() {
+    const query = document.getElementById('searchQuery').value.trim();
+    if (!query) {
+        alert('Please enter a search term');
+        return;
+    }
+    await fetchAndDisplayCars(query);
+}
 
 // Function to book a car
 async function bookCar(carId) {
