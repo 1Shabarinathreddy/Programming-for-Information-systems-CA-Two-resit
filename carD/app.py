@@ -54,6 +54,11 @@ def book_cars():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('book_cars.html')
+@app.route('/car-bookings', methods=['GET'])
+def car_bookings():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('car_bookings.html')
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -224,6 +229,23 @@ def available_cars():
     ]
     
     return jsonify({'cars': cars_list}), 200
+
+@app.route('/api/car-bookings', methods=['GET'])
+def api_car_bookings():
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    user_id = session['user_id']
+    cars_owned = Car.query.filter_by(user_id=user_id).all()
+    car_ids = [car.id for car in cars_owned]
+    bookings = Booking.query.filter(Booking.car_id.in_(car_ids)).all()
+    bookings_list = [{
+        'car_model': booking.car.model,
+        'booking_date': booking.booking_date.strftime('%Y-%m-%d %H:%M:%S'),
+        'status': booking.status,
+        'booked_by': booking.user.username,
+        'booked_user_contact': booking.user.phone
+    } for booking in bookings]
+    return jsonify({'bookings': bookings_list}), 200
 
 
 
