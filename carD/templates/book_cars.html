@@ -5,10 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/styles.css">
     <title>Book Cars - Car Connect</title>
+    <style>
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            padding: 10px;
+            width: 50%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        .search-container button {
+            background-color: #4facfe;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: #b23b3b;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
         <h2>Available Cars for Booking</h2>
+
+        <div class="search-container">
+            <input type="text" id="searchQuery" placeholder="Search cars by model or price" />
+            <button onclick="searchCars()">Search</button>
+        </div>
+
         <div id="carsContainer" class="cars-container"></div>
         <div class="button-container">
             <a href="/dashboard" class="button">Back to Dashboard</a>
