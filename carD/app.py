@@ -59,6 +59,11 @@ def car_bookings():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('car_bookings.html')
+@app.route('/my-bookings', methods=['GET'])
+def my_bookings():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('my_bookings.html')
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -247,6 +252,31 @@ def api_car_bookings():
     } for booking in bookings]
     return jsonify({'bookings': bookings_list}), 200
 
+@app.route('/api/my-bookings', methods=['GET'])
+def api_my_bookings():
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+
+
+    user_id = session['user_id']
+    bookings = Booking.query.filter_by(user_id=user_id).all()
+   
+    bookings_list = []
+    for booking in bookings:
+        car = booking.car
+        # Fetch the owner (user) of the car using car.user_id
+        car_owner = User.query.filter_by(id=car.user_id).first()
+       
+        booking_info = {
+            'car_model': car.model,
+            'booking_date': booking.booking_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'status': booking.status,
+            'owner_name': car_owner.username,
+            'owner_contact': car_owner.phone
+        }
+        bookings_list.append(booking_info)
+   
+    return jsonify({'bookings': bookings_list}), 200
 
 
 if __name__ == '__main__':
