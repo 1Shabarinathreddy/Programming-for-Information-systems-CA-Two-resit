@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "b8b1d5a3c3a24f82a7bc4012a6e9d158"
@@ -47,6 +48,12 @@ def landing():
 @app.route('/signup', methods=['GET'])
 def signup():
     return render_template('signup.html')
+
+@app.route('/book-cars', methods=['GET'])
+def book_cars():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('book_cars.html')
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -171,6 +178,52 @@ def update_car(car_id):
     
     db.session.commit()
     return jsonify({'message': 'Car updated successfully!'}), 200
+
+
+
+# API to book a car
+@app.route('/api/book-car/<int:car_id>', methods=['POST'])
+def book_car(car_id):
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    user_id = session['user_id']
+    car = Car.query.get(car_id)
+
+    if not car:
+        return jsonify({'message': 'Car not found'}), 404
+
+    if car.user_id == user_id:
+        return jsonify({'message': 'You cannot book your own car.'}), 403
+
+    # Create a booking
+    booking = Booking(user_id=user_id, car_id=car.id, booking_date=datetime.now())
+    db.session.add(booking)
+    db.session.commit()
+
+    return jsonify({'message': 'Car booked successfully!'}), 200
+
+
+@app.route('/api/available-cars', methods=['GET'])
+def available_cars():
+    if 'user_id' not in session:
+        return jsonify({'message': 'Unauthorized access'}), 401
+    
+    user_id = session['user_id']
+    
+    # Fetch all cars except those owned by the logged-in user
+    cars = Car.query.filter(Car.user_id != user_id).all()
+    cars_list = [
+        {
+            'id': car.id,
+            'model': car.model,
+            'price': car.price,
+            'contact_number': car.contact_number,
+            'photo': car.photo
+        }
+        for car in cars
+    ]
+    
+    return jsonify({'cars': cars_list}), 200
 
 
 
